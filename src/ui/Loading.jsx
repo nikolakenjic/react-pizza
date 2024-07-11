@@ -1,7 +1,11 @@
-import React from 'react';
+import React from 'react'
 
 const Loading = () => {
-  return <div className="loading"></div>;
-};
+  return (
+    <div className="absolute inset-0 flex items-center justify-center bg-slate-200/20 backdrop-blur-sm">
+      <div className="loading"></div>;
+    </div>
+  )
+}
 
-export default Loading;
+export default Loading
