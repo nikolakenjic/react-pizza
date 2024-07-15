@@ -8,6 +8,8 @@ import {
   formatDate,
 } from '../../utils/helpers'
 import OrderItem from '../order/OrderItem'
+import { useEffect } from 'react'
+import UpdateOrder from './UpdateOrder'
 
 // const order = {
 //   id: 'ABCDEF',
@@ -46,7 +48,11 @@ import OrderItem from '../order/OrderItem'
 
 function Order() {
   const order = useLoaderData()
-  // const fetcher = useFetcher()
+  const fetcher = useFetcher()
+
+  useEffect(() => {
+    if (!fetcher.data && fetcher.state === 'idle') fetcher.load('/menu')
+  }, [fetcher])
 
   // Everyone can search for all orders, so for privacy reasons we're gonna gonna exclude names or address, these are only for the restaurant staff
   const {
@@ -61,7 +67,7 @@ function Order() {
   const deliveryIn = calcMinutesLeft(estimatedDelivery)
 
   return (
-    <div className="space-x-8 px-4 py-6 text-center">
+    <div className="space-y-8 px-4 py-6">
       <div className="m-8 flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-xl font-semibold">Order #{id} status</h2>
 
@@ -88,16 +94,16 @@ function Order() {
         </p>
       </div>
 
-      <ul className="dive-stone-200 mt-4 divide-y border-b border-t">
+      <ul className="dive-stone-200 divide-y border-b border-t px-6">
         {cart.map((item) => (
           <OrderItem
             item={item}
             key={item.pizzaId}
-            // isLoadingIngredients={fetcher.state === 'loading'}
-            // ingredients={
-            //   fetcher?.data?.find((el) => el.id === item.pizzaId)
-            //     ?.ingredients ?? []
-            // }
+            isLoadingIngredients={fetcher.state === 'loading'}
+            ingredients={
+              fetcher?.data?.find((el) => el.id === item.pizzaId)
+                ?.ingredients ?? []
+            }
           />
         ))}
       </ul>
@@ -115,6 +121,7 @@ function Order() {
           To pay on delivery: {formatCurrency(orderPrice + priorityPrice)}
         </p>
       </div>
+      {!priority && <UpdateOrder order={order} />}
     </div>
   )
 }
